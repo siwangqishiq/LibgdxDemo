@@ -1,4 +1,3 @@
-
 package com.xinlan.role;
 
 import com.badlogic.gdx.Gdx;
@@ -14,7 +13,7 @@ import com.badlogic.gdx.graphics.glutils.ImmediateModeRenderer10;
 import com.badlogic.gdx.math.Vector3;
 
 public class MapRenderer {
-	Map map;
+	Map map;// 界面所有的成员 角色
 	OrthographicCamera cam;
 	SpriteCache cache;
 	SpriteBatch batch = new SpriteBatch(10000);
@@ -44,18 +43,20 @@ public class MapRenderer {
 	TextureRegion laser;
 	FPSLogger fps = new FPSLogger();
 
-	public MapRenderer (Map map) {
+	public MapRenderer(Map map) {
 		this.map = map;
 		this.cam = new OrthographicCamera(24, 16);
 		this.cam.position.set(map.bob.pos.x, map.bob.pos.y, 0);
-		this.cache = new SpriteCache(this.map.tiles.length * this.map.tiles[0].length, false);
-		this.blocks = new int[(int)Math.ceil(this.map.tiles.length / 24.0f)][(int)Math.ceil(this.map.tiles[0].length / 16.0f)];
+		this.cache = new SpriteCache(this.map.tiles.length
+				* this.map.tiles[0].length, false);
+		this.blocks = new int[(int) Math.ceil(this.map.tiles.length / 24.0f)][(int) Math
+				.ceil(this.map.tiles[0].length / 16.0f)];
 
 		createAnimations();
 		createBlocks();
 	}
 
-	private void createBlocks () {
+	private void createBlocks() {
 		int width = map.tiles.length;
 		int height = map.tiles[0].length;
 		for (int blockY = 0; blockY < blocks[0].length; blockY++) {
@@ -63,22 +64,27 @@ public class MapRenderer {
 				cache.beginCache();
 				for (int y = blockY * 16; y < blockY * 16 + 16; y++) {
 					for (int x = blockX * 24; x < blockX * 24 + 24; x++) {
-						if (x > width) continue;
-						if (y > height) continue;
+						if (x > width)
+							continue;
+						if (y > height)
+							continue;
 						int posX = x;
 						int posY = height - y - 1;
-						if (map.tiles[x][y] == Map.TILE) cache.add(tile, posX, posY, 1, 1);
-						if (map.tiles[x][y] == Map.SPIKES) cache.add(spikes, posX, posY, 1, 1);
+						if (map.tiles[x][y] == Map.TILE)
+							cache.add(tile, posX, posY, 1, 1);
+						if (map.tiles[x][y] == Map.SPIKES)
+							cache.add(spikes, posX, posY, 1, 1);
 					}
-				}
+				}//end for i
 				blocks[blockX][blockY] = cache.endCache();
 			}
 		}
-		System.out.println("blocks created");
+		System.out.println("地形创建完成!");
 	}
 
-	private void createAnimations () {
-		this.tile = new TextureRegion(new Texture(Gdx.files.internal("data/tile.png")), 0, 0, 20, 20);
+	private void createAnimations() {
+		this.tile = new TextureRegion(new Texture(
+				Gdx.files.internal("data/tile.png")), 0, 0, 20, 20);
 		Texture bobTexture = new Texture(Gdx.files.internal("data/bob.png"));
 		TextureRegion[] split = new TextureRegion(bobTexture).split(20, 20)[0];
 		TextureRegion[] mirror = new TextureRegion(bobTexture).split(20, 20)[0];
@@ -94,7 +100,8 @@ public class MapRenderer {
 		bobDead = new Animation(0.2f, split[0]);
 		split = new TextureRegion(bobTexture).split(20, 20)[1];
 		cube = split[0];
-		cubeFixed = new Animation(1, split[1], split[2], split[3], split[4], split[5]);
+		cubeFixed = new Animation(1, split[1], split[2], split[3], split[4],
+				split[5]);
 		split = new TextureRegion(bobTexture).split(20, 20)[2];
 		cubeControlled = split[0];
 		spawn = new Animation(0.1f, split[4], split[3], split[2], split[1]);
@@ -104,7 +111,8 @@ public class MapRenderer {
 		rocket = new Animation(0.1f, split[0], split[1], split[2], split[3]);
 		rocketPad = split[4];
 		split = new TextureRegion(bobTexture).split(20, 20)[4];
-		rocketExplosion = new Animation(0.1f, split[0], split[1], split[2], split[3], split[4], split[4]);
+		rocketExplosion = new Animation(0.1f, split[0], split[1], split[2],
+				split[3], split[4], split[4]);
 		split = new TextureRegion(bobTexture).split(20, 20)[5];
 		endDoor = split[2];
 		movingSpikes = split[0];
@@ -114,11 +122,14 @@ public class MapRenderer {
 	float stateTime = 0;
 	Vector3 lerpTarget = new Vector3();
 
-	public void render (float deltaTime) {
+	public void render(float deltaTime) {
 		if (map.cube.state != Cube.CONTROLLED)
-			cam.position.lerp(lerpTarget.set(map.bob.pos.x, map.bob.pos.y, 0), 2f * deltaTime);
+			cam.position.lerp(lerpTarget.set(map.bob.pos.x, map.bob.pos.y, 0),
+					2f * deltaTime);
 		else
-			cam.position.lerp(lerpTarget.set(map.cube.pos.x, map.cube.pos.y, 0), 2f * deltaTime);
+			cam.position.lerp(
+					lerpTarget.set(map.cube.pos.x, map.cube.pos.y, 0),
+					2f * deltaTime);
 		cam.update();
 
 		renderLaserBeams();
@@ -139,7 +150,9 @@ public class MapRenderer {
 		batch.setProjectionMatrix(cam.combined);
 		batch.begin();
 		renderDispensers();
-		if (map.endDoor != null) batch.draw(endDoor, map.endDoor.bounds.x, map.endDoor.bounds.y, 1, 1);
+		if (map.endDoor != null)
+			batch.draw(endDoor, map.endDoor.bounds.x, map.endDoor.bounds.y, 1,
+					1);
 		renderLasers();
 		renderMovingSpikes();
 		renderBob();
@@ -151,7 +164,7 @@ public class MapRenderer {
 		fps.log();
 	}
 
-	private void renderBob () {
+	private void renderBob() {
 		Animation anim = null;
 		boolean loop = true;
 		if (map.bob.state == Bob.RUN) {
@@ -180,52 +193,63 @@ public class MapRenderer {
 			anim = dying;
 			loop = false;
 		}
-		batch.draw(anim.getKeyFrame(map.bob.stateTime, loop), map.bob.pos.x, map.bob.pos.y, 1, 1);
+		batch.draw(anim.getKeyFrame(map.bob.stateTime, loop), map.bob.pos.x,
+				map.bob.pos.y, 1, 1);
 	}
 
-	private void renderCube () {
-		if (map.cube.state == Cube.FOLLOW) batch.draw(cube, map.cube.pos.x, map.cube.pos.y, 1.5f, 1.5f);
+	private void renderCube() {
+		if (map.cube.state == Cube.FOLLOW)
+			batch.draw(cube, map.cube.pos.x, map.cube.pos.y, 1.5f, 1.5f);
 		if (map.cube.state == Cube.FIXED)
-			batch.draw(cubeFixed.getKeyFrame(map.cube.stateTime, false), map.cube.pos.x, map.cube.pos.y, 1.5f, 1.5f);
-		if (map.cube.state == Cube.CONTROLLED) batch.draw(cubeControlled, map.cube.pos.x, map.cube.pos.y, 1.5f, 1.5f);
+			batch.draw(cubeFixed.getKeyFrame(map.cube.stateTime, false),
+					map.cube.pos.x, map.cube.pos.y, 1.5f, 1.5f);
+		if (map.cube.state == Cube.CONTROLLED)
+			batch.draw(cubeControlled, map.cube.pos.x, map.cube.pos.y, 1.5f,
+					1.5f);
 	}
 
-	private void renderRockets () {
+	private void renderRockets() {
 		for (int i = 0; i < map.rockets.size; i++) {
 			Rocket rocket = map.rockets.get(i);
 			if (rocket.state == Rocket.FLYING) {
-				TextureRegion frame = this.rocket.getKeyFrame(rocket.stateTime, true);
-				batch.draw(frame, rocket.pos.x, rocket.pos.y, 0.5f, 0.5f, 1, 1, 1, 1, rocket.vel.angle());
+				TextureRegion frame = this.rocket.getKeyFrame(rocket.stateTime,
+						true);
+				batch.draw(frame, rocket.pos.x, rocket.pos.y, 0.5f, 0.5f, 1, 1,
+						1, 1, rocket.vel.angle());
 			} else {
-				TextureRegion frame = this.rocketExplosion.getKeyFrame(rocket.stateTime, false);
+				TextureRegion frame = this.rocketExplosion.getKeyFrame(
+						rocket.stateTime, false);
 				batch.draw(frame, rocket.pos.x, rocket.pos.y, 1, 1);
 			}
 			batch.draw(rocketPad, rocket.startPos.x, rocket.startPos.y, 1, 1);
 		}
 	}
 
-	private void renderDispensers () {
+	private void renderDispensers() {
 		for (int i = 0; i < map.dispensers.size; i++) {
 			Dispenser dispenser = map.dispensers.get(i);
-			batch.draw(this.dispenser, dispenser.bounds.x, dispenser.bounds.y, 1, 1);
+			batch.draw(this.dispenser, dispenser.bounds.x, dispenser.bounds.y,
+					1, 1);
 		}
 	}
 
-	private void renderMovingSpikes () {
+	private void renderMovingSpikes() {
 		for (int i = 0; i < map.movingSpikes.size; i++) {
 			MovingSpikes spikes = map.movingSpikes.get(i);
-			batch.draw(movingSpikes, spikes.pos.x, spikes.pos.y, 0.5f, 0.5f, 1, 1, 1, 1, spikes.angle);
+			batch.draw(movingSpikes, spikes.pos.x, spikes.pos.y, 0.5f, 0.5f, 1,
+					1, 1, 1, spikes.angle);
 		}
 	}
 
-	private void renderLasers () {
+	private void renderLasers() {
 		for (int i = 0; i < map.lasers.size; i++) {
 			Laser laser = map.lasers.get(i);
-			batch.draw(this.laser, laser.pos.x, laser.pos.y, 0.5f, 0.5f, 1, 1, 1, 1, laser.angle);
+			batch.draw(this.laser, laser.pos.x, laser.pos.y, 0.5f, 0.5f, 1, 1,
+					1, 1, laser.angle);
 		}
 	}
 
-	private void renderLaserBeams () {
+	private void renderLaserBeams() {
 		cam.apply(Gdx.gl10);
 		renderer.begin(GL10.GL_LINES);
 		for (int i = 0; i < map.lasers.size; i++) {
@@ -240,7 +264,7 @@ public class MapRenderer {
 		renderer.end();
 	}
 
-	public void dispose () {
+	public void dispose() {
 		cache.dispose();
 		batch.dispose();
 		tile.getTexture().dispose();

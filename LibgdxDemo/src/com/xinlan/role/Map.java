@@ -7,7 +7,7 @@ import com.badlogic.gdx.utils.Array;
 
 public class Map {
 	static int EMPTY = 0;
-	static int TILE = 0xffffff;
+	static int TILE = 0xffffff;//墙壁
 	static int START = 0xff0000;
 	static int END = 0xff00ff;
 	static int DISPENSER = 0xff0100;
@@ -52,7 +52,7 @@ public class Map {
 					lasers.add(new Laser(this, x, pixmap.getHeight() - 1 - y));
 				} else if (pix == END) {
 					endDoor = new EndDoor(x, pixmap.getHeight() - 1 - y);
-				} else {
+				} else {//empty title 钉子
 					tiles[x][y] = pix;
 				}
 			}
